@@ -1,0 +1,35 @@
+import os
+from dotenv import load_dotenv
+from espn_api.football import League
+
+# Explicitly load the .env file
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+env_loaded = load_dotenv(dotenv_path=env_path)
+print(f".env loaded: {env_loaded}")
+
+# Grab variables
+league_id = os.getenv("LEAGUE_ID")
+year = os.getenv("YEAR")
+swid = os.getenv("SWID")
+espn_s2 = os.getenv("ESPN_S2")
+
+# Debug: check if values were read
+print("LEAGUE_ID:", league_id)
+print("YEAR:", year)
+print("SWID:", swid[:10] + "...") if swid else print("SWID is None")
+print("ESPN_S2:", espn_s2[:10] + "...") if espn_s2 else print("ESPN_S2 is None")
+
+# Only proceed if all values were loaded
+if None in (league_id, year, swid, espn_s2):
+    print("❌ One or more environment variables not loaded. Fix the .env file path.")
+else:
+    try:
+        league = League(
+            league_id=int(league_id),
+            year=int(year),
+            swid=swid,
+            espn_s2=espn_s2
+        )
+        print(f"✅ Connected to league: {league.settings.name}")
+    except Exception as e:
+        print(f"❌ Could not fetch data from ESPN:\n{e}")
